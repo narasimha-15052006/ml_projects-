@@ -1,11 +1,22 @@
 import sys
-import logging
+from src.logger import logging
+
+# Configure logging
+logging.basicConfig(
+    filename="app.log",
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
 def error_message_detail(error, error_detail):
+    """
+    Returns a formatted error message with filename and line number
+    """
     _, _, exc_tb = error_detail.exc_info()
     file_name = exc_tb.tb_frame.f_code.co_filename
     error_message = "Error occurred in python script name [{0}] line number [{1}] error message [{2}]".format(
-        file_name, exc_tb.tb_lineno, str(error))
-    
+        file_name, exc_tb.tb_lineno, str(error)
+    )
     return error_message
 
 
@@ -18,6 +29,10 @@ class CustomException(Exception):
         return self.error_message
 
 
-
-
-    
+if __name__ == "__main__":
+    try:
+        # This will actually cause a divide-by-zero error
+        a = 1 / 0
+    except Exception as e:
+        logging.error("An exception occurred", exc_info=True)
+        raise CustomException(e, sys)
